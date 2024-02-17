@@ -16,37 +16,54 @@ const BookForm = (props) => {
   const [errorMsg, setErrorMsg] = useState('');
   const { bookname, author, price, quantity } = book;
 
+  // This function handles the form submission.
   const handleOnSubmit = (event) => {
+    // Prevent the default form submission behavior.
     event.preventDefault();
+
+    // Create an array with the current values of the book fields.
     const values = [bookname, author, price, quantity];
     let errorMsg = '';
 
+    // Check if all fields are filled. 
+    // The every() method tests whether all elements in the array pass the test implemented by the provided function.
     const allFieldsFilled = values.every((field) => {
+      // Trim the field value and check if it's not empty and not '0'.
       const value = `${field}`.trim();
       return value !== '' && value !== '0';
     });
 
+    // If all fields are filled, create a new book object and call the handleOnSubmit function passed in props.
     if (allFieldsFilled) {
       const book = {
-        id: uuidv4(),
+        id: uuidv4(), // Generate a unique id for the book.
         bookname,
         author,
         price,
         quantity,
-        date: new Date()
+        date: new Date() // Set the current date and time.
       };
+      // Call the handleOnSubmit function passed in props with the new book object.
       props.handleOnSubmit(book);
     } else {
+      // If not all fields are filled, set the error message.
       errorMsg = 'Please fill out all the fields.';
     }
+    // Set the error message in the state.
     setErrorMsg(errorMsg);
   };
 
+  // This function handles changes in the input fields.
   const handleInputChange = (event) => {
+    // Destructure the name and value from the event target (the input field)
     const { name, value } = event.target;
+
+    // Use a switch statement to handle different cases based on the name of the input field
     switch (name) {
       case 'quantity':
+        // If the input field is 'quantity', only allow changes if the value is an integer.
         if (value === '' || parseInt(value) === +value) {
+          // Update the state of the book with the new quantity value
           setBook((prevState) => ({
             ...prevState,
             [name]: value
@@ -54,7 +71,9 @@ const BookForm = (props) => {
         }
         break;
       case 'price':
+        // If the input field is 'price', only allow changes if the value is a decimal with 2 digits after the decimal point.
         if (value === '' || value.match(/^\d{1,}(\.\d{0,2})?$/)) {
+          // Update the state of the book with the new price value
           setBook((prevState) => ({
             ...prevState,
             [name]: value
@@ -62,6 +81,7 @@ const BookForm = (props) => {
         }
         break;
       default:
+        // For all other input fields, just update the state of the book with the new value.
         setBook((prevState) => ({
           ...prevState,
           [name]: value
